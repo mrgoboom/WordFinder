@@ -106,6 +106,9 @@ public class WordFinder {
         private void writeHeader(StringBuffer sb){
             sb.append("<!DOCTYPE html>\n<html>\n<head>\n<style>\n");
             sb.append("span\n{\nbackground-color:yellow;\n}\n");
+            sb.append("table\n{\nborder-collapse:collapse;\ntext-align:center;\n}\n");
+            sb.append("td, th\n{\npadding:5px;\n}\n");
+            sb.append("table, th, td\n{\nborder:1px solid black;\n}\n");
             sb.append("</style>\n</head>\n<body>\n");
         }
         
@@ -118,12 +121,14 @@ public class WordFinder {
 		List<String> docWordList = fileToWordList(document,"\\p{javaWhitespace}");
 		boolean[] inList = allFalse(docWordList.size());
 		boolean match;
-		for(int index=0;index<docWordList.size();index++){
+                int count=0;
+		for(int index=0;index<docWordList.size();++index){
 			for(Pattern p:words){
 				Matcher m = p.matcher(docWordList.get(index));
 				match=m.matches();
 				if(match){
 					inList[index]=true;
+                                        ++count;
 					break;
 				}
 			}
@@ -152,6 +157,12 @@ public class WordFinder {
 		String eSpan = "</span>";
 		StringBuffer output = new StringBuffer("");
                 writeHeader(output);
+                output.append("========================================\n<h3>Statistics</h3>\n");
+                output.append("<table>\n<tr>\n<th>Total Words</th>\n<th>Matches</th>\n<th>Misses</th>\n<th>Hit Percentage</th>\n</tr>\n<tr>\n<td>" + docWordList.size() + "</td>\n<td>" + count + "</td>\n<td>"
+                        + (docWordList.size()-count) + "</td>\n<td>" + (((float)docWordList.size())/(float)count) + "%</td>\n</tr>\n</table>\n");
+                
+                output.append("<p>========================================</p>");
+                
 		state current;
 		if(!(first^highlightHits)){
 			output.append(sSpan);
