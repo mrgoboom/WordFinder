@@ -2,5 +2,7 @@
 *.class
 *.html
 *.wl
+~*
 /build/
 /dist/
+/wordList/
