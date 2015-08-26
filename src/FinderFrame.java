@@ -7,8 +7,12 @@ package src;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -17,12 +21,16 @@ import javax.swing.JOptionPane;
 public class FinderFrame extends javax.swing.JFrame {
 
     private File inputFile;
-    
+    private File currentDir;
+    private File outputFile;
+    private boolean other;
     /**
      * Creates new form FinderFrame
      */
     public FinderFrame() {
         initComponents();
+        other=false;
+        currentDir=new File(System.getProperty("user.home"));
     }
 
     /**
@@ -40,9 +48,12 @@ public class FinderFrame extends javax.swing.JFrame {
         introText = new javax.swing.JLabel();
         highlight = new javax.swing.JButton();
         cancel = new javax.swing.JButton();
-        filename = new javax.swing.JLabel();
+        inputFilename = new javax.swing.JLabel();
         hits = new javax.swing.JRadioButton();
         misses = new javax.swing.JRadioButton();
+        selectDir = new javax.swing.JButton();
+        outputFileText = new javax.swing.JLabel();
+        outputFilename = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -80,6 +91,15 @@ public class FinderFrame extends javax.swing.JFrame {
         selector.add(misses);
         misses.setText("Highlight misses");
 
+        selectDir.setText("Browse");
+        selectDir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectDirActionPerformed(evt);
+            }
+        });
+
+        outputFileText.setText("Output File:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -88,12 +108,6 @@ public class FinderFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(introText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 280, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(inputFileText)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(filename, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(selectFile))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(hits, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -101,7 +115,21 @@ public class FinderFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(highlight, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-                            .addComponent(misses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(misses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(inputFileText)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(inputFilename, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(outputFileText)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(outputFilename, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(selectDir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(selectFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -113,11 +141,16 @@ public class FinderFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(inputFileText)
                     .addComponent(selectFile)
-                    .addComponent(filename))
+                    .addComponent(inputFilename))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(hits, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(misses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(selectDir)
+                    .addComponent(outputFileText)
+                    .addComponent(outputFilename))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(misses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(hits, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(highlight)
@@ -128,18 +161,33 @@ public class FinderFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private boolean testOther(){
+        if(!other){
+            other=true;
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
     private void selectFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectFileActionPerformed
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setCurrentDirectory(currentDir);
+        fileChooser.setMultiSelectionEnabled(false);
         int returnValue = fileChooser.showOpenDialog(null);
         if(returnValue == JFileChooser.APPROVE_OPTION){
             inputFile = fileChooser.getSelectedFile();
-            filename.setText(inputFile.getName());
-            highlight.setEnabled(true);
+            inputFilename.setText(inputFile.getName());
+            currentDir=fileChooser.getCurrentDirectory();
+            if(testOther()){
+                highlight.setEnabled(true);
+            }
         }
     }//GEN-LAST:event_selectFileActionPerformed
 
     private void highlightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highlightActionPerformed
-        WordFinder wf = new WordFinder("TestWords1.txt",inputFile);
+        WordFinder wf = new WordFinder("TestWords1.txt",inputFile,outputFile);
 	try{
             if(hits.isSelected()){
                 wf.highlight(true);
@@ -161,6 +209,37 @@ public class FinderFrame extends javax.swing.JFrame {
     private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
         System.exit(0);
     }//GEN-LAST:event_cancelActionPerformed
+
+    private void selectDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectDirActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setCurrentDirectory(currentDir);
+        
+        String fname;
+        if(!inputFilename.getText().equals("")){
+            Pattern filename = Pattern.compile("([\\w]+)(\\.[\\w]+)?");
+            Matcher m = filename.matcher(inputFilename.getText());
+            fname=m.replaceAll("$1.html");
+        }else{
+            fname="output.html";
+        }
+        
+        fileChooser.setSelectedFile(new File(fname));
+        
+        FileFilter filter = new FileNameExtensionFilter("HTML files", "html");
+        fileChooser.addChoosableFileFilter(filter);
+                
+        int returnValue = fileChooser.showSaveDialog(null);
+        if(returnValue == JFileChooser.APPROVE_OPTION){
+            outputFile = fileChooser.getSelectedFile();
+            outputFilename.setText(outputFile.getName());
+            currentDir=fileChooser.getCurrentDirectory();
+            if(testOther()){
+                highlight.setEnabled(true);
+            }
+        }
+    }//GEN-LAST:event_selectDirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -199,12 +278,15 @@ public class FinderFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancel;
-    private javax.swing.JLabel filename;
     private javax.swing.JButton highlight;
     private javax.swing.JRadioButton hits;
     private javax.swing.JLabel inputFileText;
+    private javax.swing.JLabel inputFilename;
     private javax.swing.JLabel introText;
     private javax.swing.JRadioButton misses;
+    private javax.swing.JLabel outputFileText;
+    private javax.swing.JLabel outputFilename;
+    private javax.swing.JButton selectDir;
     private javax.swing.JButton selectFile;
     private javax.swing.ButtonGroup selector;
     // End of variables declaration//GEN-END:variables

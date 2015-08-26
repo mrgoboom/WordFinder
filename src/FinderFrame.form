@@ -31,13 +31,6 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="introText" alignment="1" pref="280" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="inputFileText" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="filename" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="selectFile" min="-2" max="-2" attributes="0"/>
-                  </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="hits" alignment="0" max="32767" attributes="0"/>
@@ -47,6 +40,25 @@
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="highlight" pref="139" max="32767" attributes="0"/>
                           <Component id="misses" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="inputFileText" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="inputFilename" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="outputFileText" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="outputFilename" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="selectDir" max="32767" attributes="0"/>
+                          <Component id="selectFile" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -63,12 +75,18 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="inputFileText" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="selectFile" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="filename" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="inputFilename" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="hits" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="selectDir" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="outputFileText" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="outputFilename" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="misses" max="32767" attributes="0"/>
+                  <Component id="hits" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -117,7 +135,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JLabel" name="filename">
+    <Component class="javax.swing.JLabel" name="inputFilename">
     </Component>
     <Component class="javax.swing.JRadioButton" name="hits">
       <Properties>
@@ -135,6 +153,21 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Highlight misses"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="selectDir">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Browse"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectDirActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="outputFileText">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Output File:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="outputFilename">
     </Component>
   </SubComponents>
 </Form>

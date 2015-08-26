@@ -62,6 +62,18 @@ public class WordFinder {
 		Matcher m = filename.matcher(doc.getName());
 		this.outputFilename=m.replaceAll("$1.html");
 	}
+        
+        WordFinder(String wordlist, File inDoc, File outDoc){
+            super();
+            List<String> patterns = fileToWordList(new File(wordlist),",");
+		
+            this.words=new ArrayList<Pattern>();
+            for(String s : patterns){
+                    this.words.add(Pattern.compile("[\\p{Punct}]*".concat(s.concat("[\\p{Punct}]*"))));
+            }
+            this.document=inDoc;
+            this.outputFilename=outDoc.getAbsolutePath();
+        }
 	
 	private List<String> fileToWordList(File f,String delimiter){
 		Scanner s;
@@ -91,6 +103,16 @@ public class WordFinder {
 		return ret;
 	}
 	
+        private void writeHeader(StringBuffer sb){
+            sb.append("<!DOCTYPE html>\n<html>\n<head>\n<style>\n");
+            sb.append("span\n{\nbackground-color:yellow;\n}\n");
+            sb.append("</style>\n</head>\n<body>\n");
+        }
+        
+        private void writeFooter(StringBuffer sb){
+            sb.append("</body>\n</html>\n");
+        }
+        
 	public void highlight(boolean highlightHits) throws IOException{
 		
 		List<String> docWordList = fileToWordList(document,"\\p{javaWhitespace}");
@@ -126,12 +148,13 @@ public class WordFinder {
 		br.close();
 		String inString=input.toString().toLowerCase();
 		
-		String HTMLStartHighlight = "<span style=\"background-color: #FFFF00\">";
-		String HTMLEndHighlight = "</span>";
-		StringBuffer output = new StringBuffer("<!DOCTYPE html>\n<html>\n<body>\n");
+		String sSpan = "<span>";
+		String eSpan = "</span>";
+		StringBuffer output = new StringBuffer("");
+                writeHeader(output);
 		state current;
 		if(!(first^highlightHits)){
-			output.append(HTMLStartHighlight);
+			output.append(sSpan);
 			current=state.COLOUR;
 		}else{
 			current=state.NO_COLOUR;
@@ -147,16 +170,17 @@ public class WordFinder {
 			startIndex=endIndex;
 			switch(current){
 				case NO_COLOUR:
-					output.append(HTMLStartHighlight);
+					output.append(sSpan);
 					current=state.COLOUR;
 					break;
 				case COLOUR:
-					output.append(HTMLEndHighlight);
+					output.append(eSpan);
 					current=state.NO_COLOUR;
 					break;
 			}
 		}
-		output.append(input.substring(startIndex)+"</body>\n</html>\n");
+		output.append(input.substring(startIndex));
+                writeFooter(output);
 		
 		PrintWriter writer = new PrintWriter(outputFilename,"UTF-8");
 		writer.print(output.toString());
