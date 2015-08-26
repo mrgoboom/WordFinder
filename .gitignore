@@ -1,5 +1,6 @@
 *.txt
 *.class
 *.html
+*.wl
 /build/
 /dist/
