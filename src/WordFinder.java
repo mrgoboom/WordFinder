@@ -91,7 +91,7 @@ public class WordFinder {
 		return ret;
 	}
 	
-	public void highlightMatches() throws IOException{
+	public void highlight(boolean highlightHits) throws IOException{
 		
 		List<String> docWordList = fileToWordList(document,"\\p{javaWhitespace}");
 		boolean[] inList = allFalse(docWordList.size());
@@ -130,7 +130,7 @@ public class WordFinder {
 		String HTMLEndHighlight = "</span>";
 		StringBuffer output = new StringBuffer("<!DOCTYPE html>\n<html>\n<body>\n");
 		state current;
-		if(first){
+		if(!(first^highlightHits)){
 			output.append(HTMLStartHighlight);
 			current=state.COLOUR;
 		}else{
@@ -175,7 +175,7 @@ public class WordFinder {
 		}
 		WordFinder wf = new WordFinder(args[0],args[1]);
 		try{
-			wf.highlightMatches();
+			wf.highlight(true);
 		}catch(IOException e){
 			System.out.println("Program failed with an IOException.\nEnsure your filenames are correct.\n");
 		}

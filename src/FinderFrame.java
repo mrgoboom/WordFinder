@@ -34,12 +34,15 @@ public class FinderFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        selector = new javax.swing.ButtonGroup();
         selectFile = new javax.swing.JButton();
         inputFileText = new javax.swing.JLabel();
         introText = new javax.swing.JLabel();
         highlight = new javax.swing.JButton();
         cancel = new javax.swing.JButton();
         filename = new javax.swing.JLabel();
+        hits = new javax.swing.JRadioButton();
+        misses = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -70,6 +73,13 @@ public class FinderFrame extends javax.swing.JFrame {
             }
         });
 
+        selector.add(hits);
+        hits.setSelected(true);
+        hits.setText("Highligt hits");
+
+        selector.add(misses);
+        misses.setText("Highlight misses");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -85,9 +95,13 @@ public class FinderFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(selectFile))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(cancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(hits, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(highlight, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(highlight, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                            .addComponent(misses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -100,7 +114,11 @@ public class FinderFrame extends javax.swing.JFrame {
                     .addComponent(inputFileText)
                     .addComponent(selectFile)
                     .addComponent(filename))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(hits, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(misses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(highlight)
                     .addComponent(cancel))
@@ -123,7 +141,11 @@ public class FinderFrame extends javax.swing.JFrame {
     private void highlightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highlightActionPerformed
         WordFinder wf = new WordFinder("TestWords1.txt",inputFile);
 	try{
-            wf.highlightMatches();
+            if(hits.isSelected()){
+                wf.highlight(true);
+            }else{
+                wf.highlight(false);
+            }
 	}catch(IOException e){
             JOptionPane.showMessageDialog(null,"Program failed with an IOException.\n"
                     + "Ensure you selected a valid readable file.","IOException",JOptionPane.ERROR_MESSAGE);
@@ -179,8 +201,11 @@ public class FinderFrame extends javax.swing.JFrame {
     private javax.swing.JButton cancel;
     private javax.swing.JLabel filename;
     private javax.swing.JButton highlight;
+    private javax.swing.JRadioButton hits;
     private javax.swing.JLabel inputFileText;
     private javax.swing.JLabel introText;
+    private javax.swing.JRadioButton misses;
     private javax.swing.JButton selectFile;
+    private javax.swing.ButtonGroup selector;
     // End of variables declaration//GEN-END:variables
 }
