@@ -29,7 +29,9 @@
                   <Component id="introText" alignment="1" pref="280" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="inputFileText" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="filename" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="selectFile" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
@@ -51,6 +53,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="inputFileText" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="selectFile" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="filename" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -98,6 +101,8 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="filename">
     </Component>
   </SubComponents>
 </Form>
