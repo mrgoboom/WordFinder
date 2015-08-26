@@ -157,9 +157,10 @@ public class WordFinder {
 		String eSpan = "</span>";
 		StringBuffer output = new StringBuffer("");
                 writeHeader(output);
+                
                 output.append("========================================\n<h3>Statistics</h3>\n");
                 output.append("<table>\n<tr>\n<th>Total Words</th>\n<th>Matches</th>\n<th>Misses</th>\n<th>Hit Percentage</th>\n</tr>\n<tr>\n<td>" + docWordList.size() + "</td>\n<td>" + count + "</td>\n<td>"
-                        + (docWordList.size()-count) + "</td>\n<td>" + (((float)docWordList.size())/(float)count) + "%</td>\n</tr>\n</table>\n");
+                        + (docWordList.size()-count) + "</td>\n<td>" + String.format("%.2f",100.0*((float)count)/(float)docWordList.size()) + "%</td>\n</tr>\n</table>\n");
                 
                 output.append("<p>========================================</p>");
                 

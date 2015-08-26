@@ -195,7 +195,7 @@ public class FinderFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_selectFileActionPerformed
 
     private void highlightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highlightActionPerformed
-        WordFinder wf = new WordFinder("TestWords1.txt",inputFile,outputFile);
+        WordFinder wf = new WordFinder("list350.wl",inputFile,outputFile);
 	try{
             if(hits.isSelected()){
                 wf.highlight(true);
