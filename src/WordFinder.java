@@ -97,7 +97,6 @@ public class WordFinder {
 		boolean[] inList = allFalse(docWordList.size());
 		boolean match;
 		for(int index=0;index<docWordList.size();index++){
-			match=false;
 			for(Pattern p:words){
 				Matcher m = p.matcher(docWordList.get(index));
 				match=m.matches();
@@ -110,7 +109,7 @@ public class WordFinder {
 		//Idea: mark transitions between states. Store in list. Count until that word token in list and insert there
 		boolean first = inList[0];
 		boolean last=first;
-		List<Integer> transitions = new ArrayList<Integer>();
+		List<Integer> transitions = new ArrayList<>();
 		for(int i=1;i<inList.length;i++){
 			if(inList[i]!=last){
 				transitions.add(i);
@@ -179,7 +178,6 @@ public class WordFinder {
 			wf.highlightMatches();
 		}catch(IOException e){
 			System.out.println("Program failed with an IOException.\nEnsure your filenames are correct.\n");
-			return;
 		}
 	}
 }
