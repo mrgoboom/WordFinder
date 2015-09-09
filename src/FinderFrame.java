@@ -23,6 +23,7 @@ public class FinderFrame extends javax.swing.JFrame {
     private File inputFile;
     private File currentDir;
     private File outputFile;
+    private String customWordList;
     private boolean other;
     /**
      * Creates new form FinderFrame
@@ -44,6 +45,7 @@ public class FinderFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         selector = new javax.swing.ButtonGroup();
+        listOptions = new javax.swing.ButtonGroup();
         selectFile = new javax.swing.JButton();
         inputFileText = new javax.swing.JLabel();
         introText = new javax.swing.JLabel();
@@ -56,6 +58,13 @@ public class FinderFrame extends javax.swing.JFrame {
         outputFileText = new javax.swing.JLabel();
         outputFilename = new javax.swing.JLabel();
         copyright = new javax.swing.JLabel();
+        Seperator = new LineJPanel();
+        instructions = new javax.swing.JLabel();
+        shortList = new javax.swing.JRadioButton();
+        longList = new javax.swing.JRadioButton();
+        customList = new javax.swing.JRadioButton();
+        selectList = new javax.swing.JButton();
+        wordList = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -104,40 +113,85 @@ public class FinderFrame extends javax.swing.JFrame {
 
         copyright.setText("\\u00A9");
 
+        javax.swing.GroupLayout SeperatorLayout = new javax.swing.GroupLayout(Seperator);
+        Seperator.setLayout(SeperatorLayout);
+        SeperatorLayout.setHorizontalGroup(
+            SeperatorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        SeperatorLayout.setVerticalGroup(
+            SeperatorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 10, Short.MAX_VALUE)
+        );
+
+        instructions.setText("Select your prefered word list.");
+
+        listOptions.add(shortList);
+        shortList.setSelected(true);
+        shortList.setText("Short Word List");
+
+        listOptions.add(longList);
+        longList.setText("Long Word List");
+
+        listOptions.add(customList);
+        customList.setText("Other");
+
+        selectList.setText("Select List");
+        selectList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectListActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(Seperator, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(introText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 280, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(copyright)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(inputFileText)
+                            .addComponent(introText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(inputFileText)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(inputFilename, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(outputFileText)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(outputFilename, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(inputFilename, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(outputFileText)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(selectDir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(selectFile, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(hits, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(outputFilename, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(selectDir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(selectFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(hits, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(misses, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(cancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(highlight, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(misses, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(instructions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(longList)
+                                    .addComponent(shortList))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(highlight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(customList)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(wordList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(selectList, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(copyright)
-                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -159,9 +213,23 @@ public class FinderFrame extends javax.swing.JFrame {
                     .addComponent(misses)
                     .addComponent(hits))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(Seperator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(instructions)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(shortList)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(longList)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(wordList, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(customList)
+                        .addComponent(selectList)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(highlight)
-                    .addComponent(cancel))
+                    .addComponent(cancel)
+                    .addComponent(highlight))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(copyright))
         );
@@ -195,7 +263,15 @@ public class FinderFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_selectFileActionPerformed
 
     private void highlightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highlightActionPerformed
-        WordFinder wf = new WordFinder("longlist.wl",inputFile,outputFile);
+        String listName;
+        if(shortList.isSelected()){
+            listName="shortlist.wl";
+        }else if(longList.isSelected()){
+            listName="longlist.wl";
+        }else{
+            listName=customWordList;
+        }
+        WordFinder wf = new WordFinder(listName,inputFile,outputFile);
 	try{
             if(hits.isSelected()){
                 wf.highlight(true);
@@ -214,12 +290,8 @@ public class FinderFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_highlightActionPerformed
 
-    private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_cancelActionPerformed
-
     private void selectDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectDirActionPerformed
-        // TODO add your handling code here:
+
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setCurrentDirectory(currentDir);
@@ -252,6 +324,26 @@ public class FinderFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_selectDirActionPerformed
+
+    private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_cancelActionPerformed
+
+    private void selectListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectListActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setAcceptAllFileFilterUsed(true);
+        fileChooser.setCurrentDirectory(currentDir);
+        
+        FileFilter filter = new FileNameExtensionFilter("Word Lists", "wl");
+        fileChooser.addChoosableFileFilter(filter);
+                
+        int returnValue = fileChooser.showSaveDialog(null);
+        currentDir=fileChooser.getCurrentDirectory();
+        if(returnValue == JFileChooser.APPROVE_OPTION){
+            customWordList = fileChooser.getSelectedFile().getAbsolutePath();
+            wordList.setText(fileChooser.getSelectedFile().getName());
+        }
+    }//GEN-LAST:event_selectListActionPerformed
 
     /**
      * @param args the command line arguments
@@ -289,18 +381,26 @@ public class FinderFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel Seperator;
     private javax.swing.JButton cancel;
     private javax.swing.JLabel copyright;
+    private javax.swing.JRadioButton customList;
     private javax.swing.JButton highlight;
     private javax.swing.JRadioButton hits;
     private javax.swing.JLabel inputFileText;
     private javax.swing.JLabel inputFilename;
+    private javax.swing.JLabel instructions;
     private javax.swing.JLabel introText;
+    private javax.swing.ButtonGroup listOptions;
+    private javax.swing.JRadioButton longList;
     private javax.swing.JRadioButton misses;
     private javax.swing.JLabel outputFileText;
     private javax.swing.JLabel outputFilename;
     private javax.swing.JButton selectDir;
     private javax.swing.JButton selectFile;
+    private javax.swing.JButton selectList;
     private javax.swing.ButtonGroup selector;
+    private javax.swing.JRadioButton shortList;
+    private javax.swing.JLabel wordList;
     // End of variables declaration//GEN-END:variables
 }
