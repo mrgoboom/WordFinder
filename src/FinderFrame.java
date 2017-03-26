@@ -6,9 +6,13 @@
 package src;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
@@ -25,14 +29,27 @@ public class FinderFrame extends javax.swing.JFrame {
     private File outputFile;
     private String customWordList;
     private boolean other;
+    
+    private final String configFilename;
     /**
      * Creates new form FinderFrame
      */
     public FinderFrame() {
         initComponents();
+        configFilename = "WordFinder.config";
         other=false;
+        copyright.setText("\u00A9 2017 by Scott Byrne");
+        try{
+            BufferedReader br = new BufferedReader(new FileReader(configFilename));
+            String line = br.readLine();
+            if (line != null){
+                currentDir=new File(line);
+                return;
+            }
+        }catch(IOException e){
+            System.err.println("IOException while trying to read default dir. Continuing...");
+        }
         currentDir=new File(System.getProperty("user.home"));
-        copyright.setText("\u00A9 2015 by Scott Byrne");
     }
 
     /**
@@ -246,6 +263,16 @@ public class FinderFrame extends javax.swing.JFrame {
         }
     }
     
+    private void writeConfig(){
+        try{
+            PrintWriter config = new PrintWriter(configFilename);
+            config.println(currentDir);
+            config.close();
+        }catch(IOException e){
+            System.err.println("Unable to write config file. Continuing");
+        }
+    }
+    
     private void selectFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectFileActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -253,6 +280,7 @@ public class FinderFrame extends javax.swing.JFrame {
         fileChooser.setMultiSelectionEnabled(false);
         int returnValue = fileChooser.showOpenDialog(null);
         currentDir=fileChooser.getCurrentDirectory();
+        writeConfig();
         if(returnValue == JFileChooser.APPROVE_OPTION){
             inputFile = fileChooser.getSelectedFile();
             inputFilename.setText(inputFile.getName());
@@ -312,6 +340,7 @@ public class FinderFrame extends javax.swing.JFrame {
                 
         int returnValue = fileChooser.showSaveDialog(null);
         currentDir=fileChooser.getCurrentDirectory();
+        writeConfig();
         if(returnValue == JFileChooser.APPROVE_OPTION){
             if(fileChooser.getSelectedFile().getName().matches("[\\w]+\\.html")){
                 outputFile = fileChooser.getSelectedFile();
@@ -339,6 +368,7 @@ public class FinderFrame extends javax.swing.JFrame {
                 
         int returnValue = fileChooser.showSaveDialog(null);
         currentDir=fileChooser.getCurrentDirectory();
+        writeConfig();
         if(returnValue == JFileChooser.APPROVE_OPTION){
             customWordList = fileChooser.getSelectedFile().getAbsolutePath();
             wordList.setText(fileChooser.getSelectedFile().getName());
