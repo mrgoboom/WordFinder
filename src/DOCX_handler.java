@@ -20,9 +20,7 @@ public class DOCX_handler {
     
     DOCX_handler(File docxFile) throws IOException {
         InputStream instream = new FileInputStream(docxFile);
-        System.out.println("Created input stream");
         wordDoc = new XWPFDocument(instream);
-        System.out.println("Created WordDoc");
         extractor = new XWPFWordExtractor(wordDoc);
     }
     

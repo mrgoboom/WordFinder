@@ -326,7 +326,7 @@ public class FinderFrame extends javax.swing.JFrame {
         
         String fname;
         if(!inputFilename.getText().equals("")){
-            Pattern filename = Pattern.compile("([\\w]+)(\\.[\\w]+)?");
+            Pattern filename = Pattern.compile("([\\w\\s]+)(\\.[\\w]+)?");
             Matcher m = filename.matcher(inputFilename.getText());
             fname=m.replaceAll("$1.html");
         }else{
@@ -342,7 +342,7 @@ public class FinderFrame extends javax.swing.JFrame {
         currentDir=fileChooser.getCurrentDirectory();
         writeConfig();
         if(returnValue == JFileChooser.APPROVE_OPTION){
-            if(fileChooser.getSelectedFile().getName().matches("[\\w]+\\.html")){
+            if(fileChooser.getSelectedFile().getName().matches("[\\w\\s]+\\.html")){
                 outputFile = fileChooser.getSelectedFile();
                 outputFilename.setText(outputFile.getName());
                 if(testOther()){
