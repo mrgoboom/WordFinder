@@ -48,6 +48,10 @@ public class DOCX_handler {
         return list;
     }
     
+    public String getText(){
+        return extractor.getText();
+    }
+    
     public static void main(String[] args){
         if(args.length!=1){
             System.out.println("Improper command: Proper command is:\n\t"
