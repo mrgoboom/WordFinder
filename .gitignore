@@ -1,6 +1,7 @@
 *.txt
 *.class
 *.html
+*.config
 *.wl
 ~*
 /build/
