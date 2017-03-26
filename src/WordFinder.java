@@ -24,18 +24,6 @@ public class WordFinder {
 	WordFinder(String wordlist, String doc){
 		super();
 		List<String> patterns = fileToWordList(new File(wordlist),",");
-		/*String bigPattern="(";
-		boolean first=true;
-		for(String p:patterns){
-			if(first){
-				first=false;
-			}else{
-				bigPattern=bigPattern.concat("|");
-			}
-			bigPattern=bigPattern.concat("\\b").concat(p).concat("\\b");
-		}
-		bigPattern=bigPattern.concat(")");
-		this.pattern=Pattern.compile(bigPattern);*/
 		this.words=new ArrayList<Pattern>();
 		for(String s : patterns){
 			this.words.add(Pattern.compile("[\\p{Punct}]*".concat(s.concat("[\\p{Punct}]*"))));
