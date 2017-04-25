@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.*;
-
+import java.awt.Desktop;
 
 public class WordFinder {
 	
@@ -106,6 +106,64 @@ public class WordFinder {
         sb.append("</body>\n</html>\n");
     }
 
+    //Prepares a string to be output as html
+    private String convertToHTMLString(String input){
+        StringBuilder builder = new StringBuilder();
+        boolean prevWasSpace = false;
+        
+        for( int i = 0; i < input.length(); ++i) {
+            char ch = input.charAt(i);
+            if (ch == ' ') {
+                if (prevWasSpace) {
+                    builder.append("&nbsp;");
+                    prevWasSpace = false;
+                    continue;
+                }
+                prevWasSpace = true;
+            } else {
+                prevWasSpace = false;
+            }
+            
+            if (ch == '<'){
+                if (input.length() > i+3 && input.substring(i,i+4).equals("<br>")) { //<br>
+                    i += 3;
+                    builder.append("<br>");
+                    continue;
+                }
+            }
+            switch(ch) {
+                case '<':
+                    builder.append("&lt;");
+                    break;
+                case '>':
+                    builder.append("&gt;");
+                    break;
+                case '&':
+                    builder.append("&amp;");
+                    break;
+                case '"':
+                    builder.append("&quot;");
+                    break;
+                case '\'':
+                    builder.append("&#39;");
+                    break;
+                case '\n':
+                    break;
+                case '\t':
+                    builder.append("&nbsp; &nbsp; &nbsp;");
+                    break;
+                default:
+                    if(ch < 128) {
+                        builder.append(ch);
+                    } else {
+                        builder.append("&#").append((int)ch).append(";");
+                    }
+            }
+        }
+        
+        return builder.toString();
+    }
+    
     public void highlight(boolean highlightHits) throws IOException{
 
         List<String> docWordList;
@@ -173,12 +231,22 @@ public class WordFinder {
         }
 
         int startIndex=0;
-        int endIndex;
+        int endIndex=0;
         for(Integer i:transitions){
             if(i==null)break;
-            endIndex=inString.indexOf(docWordList.get(i),startIndex);
+            String word = docWordList.get(i);
+            char ch;
+            do {
+                endIndex=inString.indexOf(word,endIndex+1);
+                ch = inString.charAt(endIndex + word.length());
+                /*output.append("<b>Word: \"");
+                output.append(word);
+                output.append("\", Char: '");
+                output.append(ch);
+                output.append("'</b>");*/
+            }while(!(Character.isWhitespace(ch) || ch == '<'));
             if(endIndex<0)break;
-            output.append(input.substring(startIndex, endIndex));
+            output.append(convertToHTMLString(input.substring(startIndex, endIndex)));
             startIndex=endIndex;
             switch(current){
                 case NO_COLOUR:
@@ -197,6 +265,8 @@ public class WordFinder {
         PrintWriter writer = new PrintWriter(outputFilename,"UTF-8");
         writer.print(output.toString());
         writer.close();
+        File toOpen = new File(outputFilename);
+        Desktop.getDesktop().open(toOpen);
     }
 
     public static void main(String[] args){
