@@ -28,7 +28,7 @@ public class DOCX_handler {
         Scanner scan = new Scanner(input);
         scan.useDelimiter(delimiter);
         
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         while(scan.hasNext()){
             String str = scan.next();
             str = str.toLowerCase().trim();

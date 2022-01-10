@@ -25,7 +25,7 @@ public class WordFinder {
     WordFinder(String wordlist, String doc){
         super();
         List<String> patterns = fileToWordList(new File(wordlist),",");
-        this.words=new ArrayList<Pattern>();
+        this.words=new ArrayList<>();
         for(String s : patterns){
             this.words.add(Pattern.compile("[\\p{Punct}]*".concat(s.concat("[\\p{Punct}]*"))));
         }
@@ -239,14 +239,10 @@ public class WordFinder {
             do {
                 endIndex=inString.indexOf(word,endIndex+1);
                 ch = inString.charAt(endIndex + word.length());
-                /*output.append("<b>Word: \"");
-                output.append(word);
-                output.append("\", Char: '");
-                output.append(ch);
-                output.append("'</b>");*/
             }while(!(Character.isWhitespace(ch) || ch == '<'));
             if(endIndex<0)break;
-            output.append(convertToHTMLString(input.substring(startIndex, endIndex)));
+            String toAdd = convertToHTMLString(input.substring(startIndex, endIndex));
+            output.append(toAdd);
             startIndex=endIndex;
             switch(current){
                 case NO_COLOUR:
