@@ -184,10 +184,10 @@ public class WordFinder {
         }
         br.close();
 
-        String missStartTag = "<span class=\"word\">";
-        String missEndTag = "</span>";
-        String longStartTag = "<div class=\"sentence\">";
-        String longEndTag = "</div>";
+        String wordStartTag = "<span class=\"word\">";
+        String wordEndTag = "</span>";
+        String longStartTag = "<span class=\"sentence\">";
+        String longEndTag = "</span>";
         
         int numWords=0;
         int numSentences=0;
@@ -195,14 +195,16 @@ public class WordFinder {
         int numLongSentences=0;
 
         StringBuilder body = new StringBuilder("");
-        StringBuilder sentence = new StringBuilder("");
+        StringBuilder segment = new StringBuilder("");
         
         int sentenceLength=0;
-        boolean isMiss = false;
-        int lastWordEndIndex=0;
+        boolean isMiss = true;
+        boolean first = true;
         
         Pattern wordPattern = Pattern.compile("\\s*(\\S+)\\s*");
         Matcher wordMatcher = wordPattern.matcher(input);
+        
+        ArrayList<StringMissTracker> segments = new ArrayList<>();
         while (wordMatcher.find()){
             String word = wordMatcher.group(0);
             numWords++;
@@ -214,47 +216,88 @@ public class WordFinder {
                     break;
                 }
             }
-            if(matches){
+            if(first){
+                if(matches){
+                    numHits++;
+                    isMiss=false;
+                }
+                first=false;
+            }else if(matches){
                 numHits++;
                 if(isMiss){
-                    sentence.insert(lastWordEndIndex,missEndTag);
+                    segments.add(new StringMissTracker(segment.toString(),true));
+                    segment = new StringBuilder("");
                     isMiss = false;
                 }
             }else if (!isMiss){
-                sentence.append(missStartTag);
+                segments.add(new StringMissTracker(segment.toString(),false));
+                segment = new StringBuilder("");
                 isMiss = true;
             }
-            sentence.append(convertToHTMLString(word));
+            segment.append(word);
             sentenceLength++;
-            lastWordEndIndex=sentence.length()-(word.length()-wordMatcher.group(1).length());
             if(word.matches(".*[\\!\\.\\?].*")){
-                if(isMiss){
-                    sentence.insert(lastWordEndIndex,missEndTag);
-                    isMiss = false;
-                }
+                segments.add(new StringMissTracker(segment.toString(),isMiss));
                 numSentences++;
-                if(sentenceLength>WordFinder.MAXSENTENCELENGTH){
+                if(sentenceLength<=WordFinder.MAXSENTENCELENGTH){
+                    for(StringMissTracker tracker:segments){
+                        if(tracker.isMiss()^highlightHits){
+                            body.append(wordStartTag);
+                            body.append(convertToHTMLString(tracker.string()));
+                            body.append(wordEndTag);
+                        }else{
+                            body.append(convertToHTMLString(tracker.string()));
+                        }
+                    }
+                }else{
                     numLongSentences++;
-                    sentence.insert(0,longStartTag);
-                    sentence.append(longEndTag);
+                    for(StringMissTracker tracker:segments){
+                        if(tracker.isMiss()^highlightHits){
+                            body.append(wordStartTag);
+                            body.append(convertToHTMLString(tracker.string()));
+                            body.append(wordEndTag);
+                        }else{
+                            body.append(longStartTag);
+                            body.append(convertToHTMLString(tracker.string()));
+                            body.append(longEndTag);
+                        }
+                    }
                 }
-                body.append(sentence);
-                sentence = new StringBuilder("");
+                segment = new StringBuilder("");
+                segments.clear();
                 sentenceLength=0;
+                isMiss=true;
+                first=true;
             }
         }
         
         if(sentenceLength>0){
-            if(isMiss){
-                sentence.insert(lastWordEndIndex,missEndTag);
-            }
+            segments.add(new StringMissTracker(segment.toString(),isMiss));
             numSentences++;
-            if(sentenceLength>WordFinder.MAXSENTENCELENGTH){
+            if(sentenceLength<=WordFinder.MAXSENTENCELENGTH){
+                for(StringMissTracker tracker:segments){
+                    if(tracker.isMiss()^highlightHits){
+                        body.append(wordStartTag);
+                        body.append(convertToHTMLString(tracker.string()));
+                        body.append(wordEndTag);
+                    }else{
+                        body.append(convertToHTMLString(tracker.string()));
+                    }
+                }
+            }else{
                 numLongSentences++;
-                sentence.insert(0,longStartTag);
-                sentence.append(longEndTag);
+                for(StringMissTracker tracker:segments){
+                    if(tracker.isMiss()^highlightHits){
+                        body.append(wordStartTag);
+                        body.append(convertToHTMLString(tracker.string()));
+                        body.append(wordEndTag);
+                    }else{
+                        body.append(longStartTag);
+                        body.append(convertToHTMLString(tracker.string()));
+                        body.append(longEndTag);
+                    }
+                }
             }
-            body.append(sentence);
         }
         
         StringBuilder output = new StringBuilder("");
