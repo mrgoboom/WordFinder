@@ -96,7 +96,9 @@ public class WordFinder {
 
     private void writeHeader(StringBuilder sb){
         sb.append("<!DOCTYPE html>\n<html>\n<head>\n<style>\n");
-        sb.append("span\n{\nbackground-color:yellow;\n}\n");
+        sb.append(".word { background-color: yellow; }\n");
+        sb.append(".sentence { background-color: aqua; }\n");
+        //sb.append("span\n{\nbackground-color:yellow;\n}\n");
         sb.append("table\n{\nborder-collapse:collapse;\ntext-align:center;\n}\n");
         sb.append("td, th\n{\npadding:5px;\n}\n");
         sb.append("table, th, td\n{\nborder:1px solid black;\n}\n");
@@ -149,10 +151,10 @@ public class WordFinder {
                     builder.append("&#39;");
                     break;
                 case '\n':
-                    builder.append("<br>");
+                    builder.append("<br>\n");
                     break;
                 case '\t':
-                    builder.append("&nbsp; &nbsp; &nbsp;");
+                    builder.append("&nbsp; &nbsp; &nbsp; ");
                     break;
                 default:
                     if(ch < 128) {
@@ -182,10 +184,10 @@ public class WordFinder {
         }
         br.close();
 
-        String missStartTag = "<miss>"; //Placeholder
-        String missEndTag = "</miss>";  //Placeholder
-        String longStartTag = "<long>"; //Placeholder
-        String longEndTag = "</long>";
+        String missStartTag = "<span class=\"word\">";
+        String missEndTag = "</span>";
+        String longStartTag = "<div class=\"sentence\">";
+        String longEndTag = "</div>";
         
         int numWords=0;
         int numSentences=0;
@@ -222,7 +224,7 @@ public class WordFinder {
                 sentence.append(missStartTag);
                 isMiss = true;
             }
-            sentence.append(word);
+            sentence.append(convertToHTMLString(word));
             sentenceLength++;
             lastWordEndIndex=sentence.length()-(word.length()-wordMatcher.group(1).length());
             if(word.matches(".*[\\!\\.\\?].*")){
@@ -242,6 +244,19 @@ public class WordFinder {
             }
         }
         
+        if(sentenceLength>0){
+            if(isMiss){
+                sentence.insert(lastWordEndIndex,missEndTag);
+            }
+            numSentences++;
+            if(sentenceLength>WordFinder.MAXSENTENCELENGTH){
+                numLongSentences++;
+                sentence.insert(0,longStartTag);
+                sentence.append(longEndTag);
+            }
+            body.append(sentence);
+        }
+        
         StringBuilder output = new StringBuilder("");
         writeHeader(output);
         
@@ -251,7 +266,7 @@ public class WordFinder {
                 + numSentences + "</td>\n<td>" + numLongSentences + "</td>\n<td>" + String.format("%.2f", 100.0*((float)numLongSentences)/(float)numSentences) + "%</td>\n</tr>\n</table>\n");
 
         output.append("<p>========================================</p>\n");
-        output.append(convertToHTMLString(body.toString()));
+        output.append(body);
         writeFooter(output);
         
         PrintWriter writer = new PrintWriter(outputFilename,"UTF-8");
