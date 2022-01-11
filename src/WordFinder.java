@@ -17,10 +17,11 @@ public class WordFinder {
 	
     enum state{COLOUR,NO_COLOUR};
 
-    List<Pattern> words;
+    private List<Pattern> words;
     //Pattern pattern;
-    File document;
-    String outputFilename;
+    private File document;
+    private String outputFilename;
+    private static final int MAXSENTENCELENGTH = 7;
 
     WordFinder(String wordlist, String doc){
         super();
@@ -93,7 +94,7 @@ public class WordFinder {
             return ret;
     }
 
-    private void writeHeader(StringBuffer sb){
+    private void writeHeader(StringBuilder sb){
         sb.append("<!DOCTYPE html>\n<html>\n<head>\n<style>\n");
         sb.append("span\n{\nbackground-color:yellow;\n}\n");
         sb.append("table\n{\nborder-collapse:collapse;\ntext-align:center;\n}\n");
@@ -102,7 +103,7 @@ public class WordFinder {
         sb.append("</style>\n</head>\n<body>\n");
     }
 
-    private void writeFooter(StringBuffer sb){
+    private void writeFooter(StringBuilder sb){
         sb.append("</body>\n</html>\n");
     }
 
@@ -148,6 +149,7 @@ public class WordFinder {
                     builder.append("&#39;");
                     break;
                 case '\n':
+                    builder.append("<br>");
                     break;
                 case '\t':
                     builder.append("&nbsp; &nbsp; &nbsp;");
@@ -165,99 +167,93 @@ public class WordFinder {
     }
     
     public void highlight(boolean highlightHits) throws IOException{
-
-        List<String> docWordList;
         BufferedReader br;
-        String fname = document.getName().toLowerCase();
+        String fname = this.document.getName().toLowerCase();
         if(fname.matches(".*\\.docx")){
-            DOCX_handler handler = new DOCX_handler(document);
-            docWordList = handler.extractText("\\p{javaWhitespace}");
+            DOCX_handler handler = new DOCX_handler(this.document);
             br = new BufferedReader(new StringReader(handler.getText()));
         }else{
-            docWordList = fileToWordList(document,"\\p{javaWhitespace}");
-            br = new BufferedReader(new FileReader(document));
+            br = new BufferedReader(new FileReader(this.document));
         }
+        StringBuilder input = new StringBuilder();
+        String buffer;
+        while((buffer=br.readLine())!=null){
+            input.append(buffer+"\n");
+        }
+        br.close();
 
-        boolean[] inList = allFalse(docWordList.size());
-        boolean match;
-        int count=0;
-        for(int index=0;index<docWordList.size();++index){
-            for(Pattern p:words){
-                Matcher m = p.matcher(docWordList.get(index));
-                match=m.matches();
-                if(match){
-                    inList[index]=true;
-                    ++count;
+        String missStartTag = "<miss>"; //Placeholder
+        String missEndTag = "</miss>";  //Placeholder
+        String longStartTag = "<long>"; //Placeholder
+        String longEndTag = "</long>";
+        
+        int numWords=0;
+        int numSentences=0;
+        int numHits=0;
+        int numLongSentences=0;
+
+        StringBuilder body = new StringBuilder("");
+        StringBuilder sentence = new StringBuilder("");
+        
+        int sentenceLength=0;
+        boolean isMiss = false;
+        int lastWordEndIndex=0;
+        
+        Pattern wordPattern = Pattern.compile("\\s*(\\S+)\\s*");
+        Matcher wordMatcher = wordPattern.matcher(input);
+        while (wordMatcher.find()){
+            String word = wordMatcher.group(0);
+            numWords++;
+            boolean matches = false;
+            for(Pattern pattern:this.words){
+                Matcher patternMatcher = pattern.matcher(word.toLowerCase().trim());
+                if(patternMatcher.matches()){
+                    matches = true;
                     break;
                 }
             }
-        }
-        //Idea: mark transitions between states. Store in list. Count until that word token in list and insert there
-        boolean first = inList[0];
-        boolean last=first;
-        List<Integer> transitions = new ArrayList<>();
-        for(int i=1;i<inList.length;i++){
-            if(inList[i]!=last){
-                transitions.add(i);
-                last=inList[i];
+            if(matches){
+                numHits++;
+                if(isMiss){
+                    sentence.insert(lastWordEndIndex,missEndTag);
+                    isMiss = false;
+                }
+            }else if (!isMiss){
+                sentence.append(missStartTag);
+                isMiss = true;
+            }
+            sentence.append(word);
+            sentenceLength++;
+            lastWordEndIndex=sentence.length()-(word.length()-wordMatcher.group(1).length());
+            if(word.matches(".*[\\!\\.\\?].*")){
+                if(isMiss){
+                    sentence.insert(lastWordEndIndex,missEndTag);
+                    isMiss = false;
+                }
+                numSentences++;
+                if(sentenceLength>WordFinder.MAXSENTENCELENGTH){
+                    numLongSentences++;
+                    sentence.insert(0,longStartTag);
+                    sentence.append(longEndTag);
+                }
+                body.append(sentence);
+                sentence = new StringBuilder("");
+                sentenceLength=0;
             }
         }
         
-        StringBuffer input=new StringBuffer();
-        String buffer;
-        while((buffer=br.readLine())!=null){
-                input.append(buffer+"<br>\n");
-        }		
-        br.close();
-        String inString=input.toString().toLowerCase();
-
-        String sSpan = "<span>";
-        String eSpan = "</span>";
-        StringBuffer output = new StringBuffer("");
+        StringBuilder output = new StringBuilder("");
         writeHeader(output);
-
+        
         output.append("========================================\n<h3>Statistics</h3>\n");
-        output.append("<table>\n<tr>\n<th>Total Words</th>\n<th>Matches</th>\n<th>Misses</th>\n<th>Hit Percentage</th>\n</tr>\n<tr>\n<td>" + docWordList.size() + "</td>\n<td>" + count + "</td>\n<td>"
-                + (docWordList.size()-count) + "</td>\n<td>" + String.format("%.2f",100.0*((float)count)/(float)docWordList.size()) + "%</td>\n</tr>\n</table>\n");
+        output.append("<table>\n<tr>\n<th>Total Words</th>\n<th>Matches</th>\n<th>Misses</th>\n<th>Hit Percentage</th>\n<th>Total Sentences</th>\n<th>Long Sentences</th>\n<th>Long Sentence %</th>\n</tr>\n<tr>\n<td>"
+                + numWords + "</td>\n<td>" + numHits + "</td>\n<td>" + (numWords-numHits) + "</td>\n<td>" + String.format("%.2f",100.0*((float)numHits)/(float)numWords)+ "%</td>\n<td>" 
+                + numSentences + "</td>\n<td>" + numLongSentences + "</td>\n<td>" + String.format("%.2f", 100.0*((float)numLongSentences)/(float)numSentences) + "%</td>\n</tr>\n</table>\n");
 
-        output.append("<p>========================================</p>");
-
-        state current;
-        if(!(first^highlightHits)){
-            output.append(sSpan);
-            current=state.COLOUR;
-        }else{
-            current=state.NO_COLOUR;
-        }
-
-        int startIndex=0;
-        int endIndex=0;
-        for(Integer i:transitions){
-            if(i==null)break;
-            String word = docWordList.get(i);
-            char ch;
-            do {
-                endIndex=inString.indexOf(word,endIndex+1);
-                ch = inString.charAt(endIndex + word.length());
-            }while(!(Character.isWhitespace(ch) || ch == '<'));
-            if(endIndex<0)break;
-            String toAdd = convertToHTMLString(input.substring(startIndex, endIndex));
-            output.append(toAdd);
-            startIndex=endIndex;
-            switch(current){
-                case NO_COLOUR:
-                    output.append(sSpan);
-                    current=state.COLOUR;
-                    break;
-                case COLOUR:
-                    output.append(eSpan);
-                    current=state.NO_COLOUR;
-                    break;
-            }
-        }
-        output.append(input.substring(startIndex));
+        output.append("<p>========================================</p>\n");
+        output.append(convertToHTMLString(body.toString()));
         writeFooter(output);
-
+        
         PrintWriter writer = new PrintWriter(outputFilename,"UTF-8");
         writer.print(output.toString());
         writer.close();
