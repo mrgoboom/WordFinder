@@ -24,7 +24,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class FinderFrame extends javax.swing.JFrame {
 
     private File inputFile;
-    private File currentDir;
+    private File fileDir;
+    private File wordlistDir;
     private File outputFile;
     private String customWordList;
     private boolean other;
@@ -37,18 +38,23 @@ public class FinderFrame extends javax.swing.JFrame {
         initComponents();
         configFilename = "WordFinder.config";
         other=false;
-        copyright.setText("\u00A9 2017 by Scott Byrne");
+        copyright.setText("\u00A9 2022 by Scott Byrne");
         try{
             BufferedReader br = new BufferedReader(new FileReader(configFilename));
             String line = br.readLine();
             if (line != null){
-                currentDir=new File(line);
+                fileDir=new File(line);
+                line = br.readLine();
+                if(line != null){
+                    wordlistDir = new File(line);
+                }
                 return;
             }
         }catch(IOException e){
             System.err.println("IOException while trying to read default dir. Continuing...");
         }
-        currentDir=new File(System.getProperty("user.home"));
+        fileDir=new File(System.getProperty("user.home"));
+        wordlistDir = new File(System.getProperty("user.home"));
     }
 
     /**
@@ -265,7 +271,8 @@ public class FinderFrame extends javax.swing.JFrame {
     private void writeConfig(){
         try{
             PrintWriter config = new PrintWriter(configFilename);
-            config.println(currentDir);
+            config.println(fileDir);
+            config.println(wordlistDir);
             config.close();
         }catch(IOException e){
             System.err.println("Unable to write config file. Continuing");
@@ -275,10 +282,10 @@ public class FinderFrame extends javax.swing.JFrame {
     private void selectFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectFileActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setCurrentDirectory(currentDir);
+        fileChooser.setCurrentDirectory(fileDir);
         fileChooser.setMultiSelectionEnabled(false);
         int returnValue = fileChooser.showOpenDialog(null);
-        currentDir=fileChooser.getCurrentDirectory();
+        fileDir=fileChooser.getCurrentDirectory();
         writeConfig();
         if(returnValue == JFileChooser.APPROVE_OPTION){
             inputFile = fileChooser.getSelectedFile();
@@ -321,7 +328,7 @@ public class FinderFrame extends javax.swing.JFrame {
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.setCurrentDirectory(currentDir);
+        fileChooser.setCurrentDirectory(fileDir);
         
         String fname;
         if(!inputFilename.getText().equals("")){
@@ -338,7 +345,7 @@ public class FinderFrame extends javax.swing.JFrame {
         fileChooser.addChoosableFileFilter(filter);
                 
         int returnValue = fileChooser.showSaveDialog(null);
-        currentDir=fileChooser.getCurrentDirectory();
+        fileDir=fileChooser.getCurrentDirectory();
         writeConfig();
         if(returnValue == JFileChooser.APPROVE_OPTION){
             if(fileChooser.getSelectedFile().getName().matches("[\\w\\s]+\\.html")){
@@ -360,17 +367,18 @@ public class FinderFrame extends javax.swing.JFrame {
     private void selectListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectListActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
-        fileChooser.setCurrentDirectory(currentDir);
+        fileChooser.setCurrentDirectory(wordlistDir);
         
         FileFilter filter = new FileNameExtensionFilter("Word Lists", "wl");
         fileChooser.addChoosableFileFilter(filter);
                 
         int returnValue = fileChooser.showSaveDialog(null);
-        currentDir=fileChooser.getCurrentDirectory();
+        wordlistDir=fileChooser.getCurrentDirectory();
         writeConfig();
         if(returnValue == JFileChooser.APPROVE_OPTION){
             customWordList = fileChooser.getSelectedFile().getAbsolutePath();
             wordList.setText(fileChooser.getSelectedFile().getName());
+            customList.setSelected(true);
         }
     }//GEN-LAST:event_selectListActionPerformed
 
